@@ -1,8 +1,10 @@
 FROM nvidia/cuda:12.1.1-devel-ubuntu22.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-ENV TORCH_CUDA_ARCH_LIST="8.6+PTX"
-
+ENV DEBIAN_FRONTEND=noninteractive \
+    TORCH_CUDA_ARCH_LIST="8.6+PTX" \
+    HF_HUB_ENABLE_HF_TRANSFER=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONUNBUFFERED=1
 # --------------------------------------------------------
 # 1. Base system packages
 # --------------------------------------------------------
