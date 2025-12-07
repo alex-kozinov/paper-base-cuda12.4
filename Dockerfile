@@ -10,7 +10,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 # --------------------------------------------------------
 RUN apt-get update && apt-get install -y \
     python3 python3-pip python3-venv \
-    git tmux wget \
+    git tmux wget curl ca-certificates openssh-server nginx \
     libgl1-mesa-glx libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
@@ -19,28 +19,37 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1 && \
     update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 
 # --------------------------------------------------------
-# 2. Install PyTorch with CUDA 12.1 support
+# 2. Prepare host (SSH, NGINX)
+# --------------------------------------------------------
+RUN rm -f /etc/ssh/ssh_host_*
+
+# NGINX Proxy
+COPY proxy/nginx.conf /etc/nginx/nginx.conf
+COPY proxy/readme.html /usr/share/nginx/html/readme.html
+
+# --------------------------------------------------------
+# 3. Install PyTorch with CUDA 12.1 support
 # --------------------------------------------------------
 RUN pip install --upgrade pip setuptools wheel
 RUN pip install "torch>=2.3" torchvision --index-url https://download.pytorch.org/whl/cu121
 
 # --------------------------------------------------------
-# 3. Install JupyterLab
+# 4. Install JupyterLab
 # --------------------------------------------------------
 RUN pip install jupyterlab
 
 # --------------------------------------------------------
-# 4. Clone some project repository
+# 5. Clone some project repository
 # --------------------------------------------------------
 WORKDIR /workspace
 
 # --------------------------------------------------------
-# 5. Install project dependencies
+# 6. Install project dependencies
 # --------------------------------------------------------
 
 
 # --------------------------------------------------------
-# 6. Default working directory and entrypoint
+# 7. Default working directory and entrypoint
 # --------------------------------------------------------
 # Start Script
 COPY scripts/start.sh /start.sh
